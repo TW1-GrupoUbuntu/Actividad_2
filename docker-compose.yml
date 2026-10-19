@@ -1,0 +1,39 @@
+# Entorno de la Actividad 2: DNS autoritativo de horizonte.internal (primario ns1, secundario ns2) y un cliente.
+#   docker compose up -d --build
+#   bash scripts/levantar.sh        # instala ns1 y ns2
+#   bash scripts/verificar_zonas.sh # valida zonas y consultas
+x-nodo: &nodo
+  build: .
+  image: horizonte-dns:24.04
+  privileged: true            # necesario para que systemd funcione dentro del contenedor
+  cgroup: host                # requiere cgroup v2
+  tmpfs: [/run, /run/lock, /tmp]
+  volumes: [".:/lab"]         # el repositorio aparece en /lab
+
+services:
+  ns1:
+    <<: *nodo
+    container_name: ns1
+    hostname: ns1
+    networks:
+      horizonte: {ipv4_address: 10.10.10.2}
+  ns2:
+    <<: *nodo
+    container_name: ns2
+    hostname: ns2
+    networks:
+      horizonte: {ipv4_address: 10.10.10.3}
+  cliente:
+    <<: *nodo
+    container_name: cliente
+    hostname: cliente
+    command: sleep infinity
+    stop_signal: SIGKILL
+    dns: [10.10.10.2, 10.10.10.3]   # el cliente usa el DNS propio (ns1 y, si falla, ns2)
+    networks:
+      horizonte: {ipv4_address: 10.10.10.50}
+
+networks:
+  horizonte:
+    ipam:
+      config: [{subnet: 10.10.10.0/24}]

@@ -1,0 +1,26 @@
+// /etc/bind/named.conf.local — ns2 (SECUNDARIO) de horizonte.internal: copia las zonas de ns1
+include "/etc/bind/transferencia.key";
+
+// Toda conversación con ns1 (pedir la zona) se firma con la clave TSIG
+server 10.10.10.2 { keys { "transferencia-horizonte"; }; };
+
+zone "horizonte.internal" {
+    type secondary;
+    primaries { 10.10.10.2; };
+    file "/var/lib/bind/db.horizonte.internal.sec";   // copia local (sobrevive a un reinicio de ns2)
+    allow-transfer { none; };
+};
+
+zone "10.10.10.in-addr.arpa" {
+    type secondary;
+    primaries { 10.10.10.2; };
+    file "/var/lib/bind/db.10.10.10.sec";
+    allow-transfer { none; };
+};
+
+zone "0.1.0.0.8.b.d.0.1.0.0.2.ip6.arpa" {
+    type secondary;
+    primaries { 10.10.10.2; };
+    file "/var/lib/bind/db.2001.db8.10.sec";
+    allow-transfer { none; };
+};

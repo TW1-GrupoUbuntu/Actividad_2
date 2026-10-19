@@ -1,0 +1,41 @@
+; /var/lib/bind/db.horizonte.internal — Zona directa de la U.E. Horizonte (servidor primario ns1)
+; Regla de oro: un nombre SIN punto final se completa con $ORIGIN; CON punto final es un nombre completo.
+$ORIGIN horizonte.internal.
+$TTL 3600                                   ; 1 hora por defecto
+
+@   IN  SOA ns1.horizonte.internal. ti.horizonte.internal. (
+        2026101801  ; serial AAAAMMDDnn — se sube en CADA cambio (scripts/subir_serial.sh)
+        3600        ; refresh: el secundario revisa cada hora (NOTIFY lo adelanta)
+        600         ; retry:   si falla, reintenta cada 10 min
+        1209600     ; expire:  2 semanas sin primario -> el secundario deja de responder
+        300 )       ; TTL negativo: cuánto se recuerda un "no existe"
+
+; Servidores de nombres (dos, en máquinas distintas)
+@       IN  NS      ns1
+@       IN  NS      ns2
+ns1     IN  A       10.10.10.2
+ns2     IN  A       10.10.10.3
+
+; Servicios web
+@       IN  A       10.10.10.20
+www     IN  A       10.10.10.20
+www     IN  AAAA    2001:db8:10::20         ; IPv6 (prefijo de documentación 2001:db8::/32)
+portal  IN  CNAME   www                     ; alias: portal apunta al mismo destino que www
+srv-horizonte IN A  10.10.10.20
+
+; Correo
+@       IN  MX  10  mail                    ; sin punto final: se completa con $ORIGIN
+mail    IN  A       10.10.10.25
+mail    IN  AAAA    2001:db8:10::25
+@       IN  TXT     "v=spf1 mx -all"        ; SPF: solo los MX del dominio pueden enviar correo
+
+; Certificados: solo la CA del colegio puede emitir
+@       IN  CAA 0 issue "horizonte.internal"
+
+; Descubrimiento de servicio (SRV): prioridad 10, peso 100, puerto 389, destino ldap
+ldap    IN  A       10.10.10.30
+_ldap._tcp  IN  SRV 10 100 389 ldap
+
+; Infraestructura interna
+impresora   IN  A   10.10.10.60
+aula-lab    IN  A   10.10.10.70

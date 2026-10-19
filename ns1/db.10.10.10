@@ -1,0 +1,18 @@
+; /var/lib/bind/db.10.10.10 — Zona inversa de la red 10.10.10.0/24 (IP -> nombre)
+; Los nombres de la IZQUIERDA son el último octeto; los de la DERECHA van COMPLETOS y con punto final.
+$ORIGIN 10.10.10.in-addr.arpa.
+$TTL 3600
+
+@   IN  SOA ns1.horizonte.internal. ti.horizonte.internal. (
+        2026101801 3600 600 1209600 300 )
+
+@   IN  NS  ns1.horizonte.internal.
+@   IN  NS  ns2.horizonte.internal.
+
+2   IN  PTR ns1.horizonte.internal.
+3   IN  PTR ns2.horizonte.internal.
+20  IN  PTR www.horizonte.internal.
+25  IN  PTR mail.horizonte.internal.
+30  IN  PTR ldap.horizonte.internal.
+60  IN  PTR impresora.horizonte.internal.
+70  IN  PTR aula-lab.horizonte.internal.

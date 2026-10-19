@@ -1,0 +1,27 @@
+// /etc/bind/named.conf.options — ns2: servidor AUTORITATIVO secundario
+options {
+    directory "/var/cache/bind";
+
+    listen-on    { any; };
+    listen-on-v6 { none; };
+
+    recursion no;
+    allow-query     { any; };
+    allow-transfer  { none; };    // el secundario no entrega zonas a nadie
+
+    version "no disponible";
+    dnssec-validation auto;
+    minimal-responses yes;
+};
+
+logging {
+    channel transferencias {
+        file "/var/log/named/transferencias.log" versions 3 size 2m;
+        severity info;
+        print-time yes; print-severity yes; print-category yes;
+    };
+    category xfer-in  { transferencias; };
+    category xfer-out { transferencias; };
+    category notify   { transferencias; };
+    category security { transferencias; };
+};

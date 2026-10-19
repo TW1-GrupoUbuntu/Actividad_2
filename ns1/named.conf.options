@@ -1,0 +1,28 @@
+// /etc/bind/named.conf.options — ns1: servidor AUTORITATIVO (no resuelve nombres ajenos)
+options {
+    directory "/var/cache/bind";
+
+    listen-on    { any; };
+    listen-on-v6 { none; };
+
+    recursion no;                 // un autoritativo no resuelve nombres ajenos (evita abuso y amplificación)
+    allow-query     { any; };     // cualquiera puede preguntar por NUESTRAS zonas
+    allow-transfer  { none; };    // por defecto nadie copia zonas (se abre por zona, por IP y con clave)
+
+    version "no disponible";      // no revelar la versión de BIND (dig CH TXT version.bind)
+    dnssec-validation auto;
+    minimal-responses yes;
+};
+
+// Registro de transferencias, NOTIFY y rechazos en un archivo propio (se revisa con scripts/verificar_zonas.sh)
+logging {
+    channel transferencias {
+        file "/var/log/named/transferencias.log" versions 3 size 2m;
+        severity info;
+        print-time yes; print-severity yes; print-category yes;
+    };
+    category xfer-out { transferencias; };
+    category xfer-in  { transferencias; };
+    category notify   { transferencias; };
+    category security { transferencias; };      // aquí queda "zone transfer ... denied"
+};

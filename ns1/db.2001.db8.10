@@ -1,0 +1,13 @@
+; /var/lib/bind/db.2001.db8.10 — Zona inversa IPv6 de 2001:db8:10::/48.
+; Los nombres de la izquierda son los 20 nibbles restantes, escritos al revés.
+$ORIGIN 0.1.0.0.8.b.d.0.1.0.0.2.ip6.arpa.
+$TTL 3600
+
+@   IN  SOA ns1.horizonte.internal. ti.horizonte.internal. (
+        2026101801 3600 600 1209600 300 )
+
+@   IN  NS  ns1.horizonte.internal.
+@   IN  NS  ns2.horizonte.internal.
+
+0.2.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0 IN PTR www.horizonte.internal.
+5.2.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0 IN PTR mail.horizonte.internal.

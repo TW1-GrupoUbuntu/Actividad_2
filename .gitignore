@@ -1,0 +1,12 @@
+compartido/
+informe/
+docs/
+evidencias/
+*.pdf
+*.docx
+*.pptx
+__pycache__/
+*.log
+.vscode/
+.DS_Store
+Thumbs.db

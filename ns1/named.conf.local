@@ -1,0 +1,28 @@
+// /etc/bind/named.conf.local — ns1 (PRIMARIO) de horizonte.internal
+include "/etc/bind/transferencia.key";          // clave TSIG compartida con ns2 (la crea instalar_ns1.sh)
+
+// La transferencia exige las DOS condiciones: origen 10.10.10.3 (ns2) y firma TSIG.
+// (!{ !IP; any; } equivale a "solo esa IP"; la lista se evalúa con AND porque la clave va en el mismo elemento.)
+zone "horizonte.internal" {
+    type primary;
+    file "/var/lib/bind/db.horizonte.internal";
+    allow-transfer { !{ !10.10.10.3; any; }; key "transferencia-horizonte"; };   // IP de ns2 Y clave TSIG
+    also-notify    { 10.10.10.3; };   // avisar a ns2 en cuanto cambie el serial
+    notify yes;
+};
+
+zone "10.10.10.in-addr.arpa" {
+    type primary;
+    file "/var/lib/bind/db.10.10.10";
+    allow-transfer { !{ !10.10.10.3; any; }; key "transferencia-horizonte"; };   // IP de ns2 Y clave TSIG
+    also-notify    { 10.10.10.3; };
+    notify yes;
+};
+
+zone "0.1.0.0.8.b.d.0.1.0.0.2.ip6.arpa" {
+    type primary;
+    file "/var/lib/bind/db.2001.db8.10";
+    allow-transfer { !{ !10.10.10.3; any; }; key "transferencia-horizonte"; };   // IP de ns2 Y clave TSIG
+    also-notify    { 10.10.10.3; };
+    notify yes;
+};
